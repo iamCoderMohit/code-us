@@ -10,7 +10,7 @@ const app = new Hono<{Variables: {user: User}}>()
 app.post("/create", verifyUser, async (c) => {
     try {
         const user = c.get("user")
-        const {codeSnippet} = await c.req.json()
+        const {codeSnippet, canvasId} = await c.req.json()
 
         if(!codeSnippet) {
             return errorResponse(c, "please provide some content")
@@ -18,7 +18,8 @@ app.post("/create", verifyUser, async (c) => {
 
         await db.insert(code).values({
             code: codeSnippet,
-            userId: user.id
+            canvasId,
+            createyBy: user.id
         })
 
         return successResponse(c, "code snippet created")

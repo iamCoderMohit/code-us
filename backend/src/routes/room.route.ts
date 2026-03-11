@@ -4,7 +4,9 @@ import { verifyUser } from "../middleware/auth";
 import { User } from "../customTypes/user";
 import { db } from "../config/drizzle";
 import { rooms } from "../db/schema/room";
-import { and, or, sql } from "drizzle-orm";
+import { and, sql } from "drizzle-orm";
+import { members } from "../db/schema/member";
+import { canvas } from "../db/schema/canvas";
 
 const app = new Hono<{ Variables: { user: User } }>();
 
@@ -13,7 +15,7 @@ app.post("/create", verifyUser, async (c) => {
     const user = c.get("user");
     const body = await c.req.json();
 
-    if (!body.roomCode) {
+    if (!body.roomCode || body.roomCode.length < 4) {
       return errorResponse(c, "Provide a unique room code");
     }
 
@@ -27,10 +29,9 @@ app.post("/create", verifyUser, async (c) => {
     }
     await db.insert(rooms).values({
       inviteCode: body.roomCode,
-      member: user.id,
       ownerId: user.id,
-      inRoom: true,
     });
+
     return successResponse(c, { data: "room created" });
   } catch (error) {
     console.error(error);
@@ -56,27 +57,18 @@ app.post("/join/:inviteCode", verifyUser, async (c) => {
     if (!isValid) {
       return errorResponse(c, "Invalid invite code");
     }
-    let i = 0;
-    let memberExists = false;
-    for (i = 0; i < isValid.length; i++) {
-      if (isValid[i].member === user.id) {
-        memberExists = true;
-      }
-    }
 
-    if (memberExists) {
-      return errorResponse(c, "this member already exists in the room");
-    }
-
-    const newMember = await db.insert(rooms).values({
-      id: user.id,
-      inviteCode: inviteCode,
-      ownerId: isValid[0].ownerId,
-      member: user.id,
-      inRoom: true,
+    const newMember = await db.insert(members).values({
+      userId: user.id,
+      roomId: isValid[0].id,
+      isActive: true,
     });
 
-    return successResponse(c, newMember);
+    if (!newMember) {
+      return errorResponse(c, "this user might already exist in the room");
+    }
+
+    return successResponse(c, "successfully joined the room");
   } catch (error) {
     console.error(error);
     errorResponse(c, "can't join room");
@@ -89,14 +81,17 @@ app.post("/leave/:roomId", verifyUser, async (c) => {
     const roomId = c.req.param("roomId");
     const user = c.get("user");
 
-    const roomExists = await db
-      .update(rooms)
-      .set({ inRoom: false })
-      .where(
-        and(sql`${rooms.id} = ${roomId}`, sql`${rooms.member} = ${user.id}`),
-      );
-      
-    if (!roomExists) {
+      const memberExists = await db
+        .update(members)
+        .set({ isActive: false })
+        .where(
+          and(
+            sql`${members.roomId} = ${roomId}`,
+            sql`${members.userId} = ${user.id}`,
+          ),
+        );
+
+    if (!memberExists) {
       return errorResponse(c, "this room doesn't have this user");
     }
 
@@ -110,15 +105,63 @@ app.post("/leave/:roomId", verifyUser, async (c) => {
 //route for getting all the rooms created by a user
 app.get("/allRooms", verifyUser, async (c) => {
   try {
-    const user = c.get("user")
+    const user = c.get("user");
 
-    const allRooms = await db.select().from(rooms)
-                      .where(sql`${rooms.ownerId} = ${user.id}`)
+    const allRooms = await db
+      .select()
+      .from(rooms)
+      .where(sql`${rooms.ownerId} = ${user.id}`);
 
-    return successResponse(c, allRooms)
+    return successResponse(c, allRooms);
   } catch (error) {
-    console.log(rooms)
-    return errorResponse(c, "can't get rooms")
+    console.log(rooms);
+    return errorResponse(c, "can't get rooms");
+  }
+});
+
+//get all members from a room
+app.get("/all/:roomId", verifyUser, async (c) => {
+  try {
+    const roomId = c.req.param("roomId")
+
+    const allMembers = await db.select().from(members)
+    .where(sql`${members.roomId} = ${roomId}`)
+
+    return successResponse(c, allMembers)
+
+  } catch (error) {
+    console.error(error)
+    return errorResponse(c, "can't get members")
+  }
+})
+
+//get roomId from roomCode
+app.get("/getRoomId/:roomCode", async (c) => {
+  try {
+    const roomCode = c.req.param("roomCode")
+
+    const room = await db.select().from(rooms)
+    .where(sql`${rooms.inviteCode} = ${roomCode}`)
+
+    return successResponse(c, room[0].id)
+  } catch (error) {
+    console.error(error)
+    errorResponse(c, "can't get roomId")
+  }
+})
+
+//get all canvases in the room
+app.get("/allCanvases/:roomId", async (c) => {
+  try {
+    const roomId = c.req.param("roomId")
+
+    const canvases = await db.select().from(canvas)
+      .where(sql`${canvas.roomId} = ${roomId}`)
+
+    return successResponse(c, canvases)
+  } catch (error) {
+    console.error(error)
+    return errorResponse(c, "can't get canvases")
   }
 })
 

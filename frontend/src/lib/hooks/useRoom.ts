@@ -13,8 +13,21 @@ export function useRoom() {
         }
     }
 
+    const [canvases, setCanvases] = useState([])
+
+    const allCanvases = async (roomId: string) => {
+        try {
+            const res = await api.get(`/room/allCanvases/${roomId}`)
+            setCanvases(res.data.data)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     return {
         room,
-        allRooms
+        allRooms,
+        canvases,
+        allCanvases
     }
 }
