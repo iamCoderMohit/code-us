@@ -24,3 +24,18 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.remote-cursor {
+  border-left: 3px solid red;
+  margin-left: -2px;
+}
+
+.remote-cursor-label {
+  position: relative;
+  top: -16px;
+  background: red;
+  color: white;
+  font-size: 10px;
+  padding: 2px 4px;
+  border-radius: 4px;
+}

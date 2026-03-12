@@ -23,7 +23,7 @@ app.get("/ws", upgradeWebSocket((c) => {
                 }
             })
 
-            ws.send(`Echo: ${event.data}`)
+            // ws.send(`Echo: ${event.data}`)
         },
 
         onClose(_, ws) {
