@@ -5,6 +5,7 @@ import { db } from "../config/drizzle";
 import { errorResponse, successResponse } from "../utils/apiResponse";
 import { canvas } from "../db/schema/canvas";
 import { canvas_participants } from "../db/schema/canvas_participants";
+import { sql } from "drizzle-orm";
 
 const app = new Hono<{ Variables: { user: User } }>();
 
@@ -33,20 +34,35 @@ app.post("/create", verifyUser, async (c) => {
   }
 });
 
-app.post("/:canvasId/join", async (c) => {
+app.post("/:canvasId/join", verifyUser, async (c) => {
     try {
         const canvasId = c.req.param("canvasId")
-        const userId = c.get("user").id
+        const user = c.get("user")
 
         await db.insert(canvas_participants).values({
             canvasId,
-            userId
+            userId: user.id
         })
 
         return successResponse(c, "Joined the canvas")
     } catch (error) {   
         console.error(error)
         return errorResponse(c, "Can't join canvas")
+    }
+})
+
+//get canvas details
+app.get("/canvasInfo/:canvasId", verifyUser, async (c) => {
+    try {
+        const canvasId = c.req.param("canvasId")
+
+        const canvasInfo = await db.select().from(canvas)
+            .where(sql`${canvas.id}= ${canvasId}`)
+
+        return successResponse(c, canvasInfo)
+    } catch (error) {
+        console.error(error)
+        return errorResponse(c, "can't get canvas info")
     }
 })
 
