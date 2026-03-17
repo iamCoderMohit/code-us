@@ -66,7 +66,7 @@ export default function Page() {
       options: {
         className: "remote-cursor",
         hoverMessage: {value: data.userName},
-        before: {
+        before: { 
           content: data.userName,
           inlineClassName: "remote-cursor-label",
         },
