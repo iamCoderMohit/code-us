@@ -1,3 +1,7 @@
+"use client"
+
+import { signin } from "@/lib/api/signin";
+
 export default function Navbar() {
     return (
         <div className="flex justify-between px-20 p-5 border-b-white/60 [border-bottom-width:0.1px]"
@@ -11,9 +15,10 @@ export default function Navbar() {
                 </div>
                 <div className="w-px bg-white"></div>
                 <div className="flex gap-5">
-                    <button>Log in</button>
+                    <button onClick={signin} className="cursor-pointer">Log in</button>
                     <button
-                    className="bg-white opacity-100 rounded-md px-4 text-black"
+                    className="bg-white opacity-100 rounded-md px-4 text-black cursor-pointer"
+                    onClick={signin}
                     >Sign up</button>
                 </div>
             </div>
