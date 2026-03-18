@@ -1,15 +1,17 @@
 "use client"
 
 import { signin } from "@/lib/api/signin";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
+    const router = useRouter()
     return (
         <div className="flex justify-between px-20 p-5 border-b-white/60 [border-bottom-width:0.1px]"
         >
-            <div className="text-lg font-bold">CodeUs</div>
+            <div className="text-lg font-bold cursor-pointer" onClick={() => router.push("/")}>CodeUs</div>
             <div className="flex gap-10 text-sm">
                 <div className="flex gap-5 opacity-60">
-                    <button>Room</button>
+                    <button onClick={() => router.push("/room")} className="cursor-pointer">Room</button>
                     <button>Room</button>
                     <button>Room</button>
                 </div>

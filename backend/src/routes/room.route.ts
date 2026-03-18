@@ -4,7 +4,7 @@ import { verifyUser } from "../middleware/auth";
 import { User } from "../customTypes/user";
 import { db } from "../config/drizzle";
 import { rooms } from "../db/schema/room";
-import { and, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { members } from "../db/schema/member";
 import { canvas } from "../db/schema/canvas";
 
@@ -107,10 +107,13 @@ app.get("/allRooms", verifyUser, async (c) => {
   try {
     const user = c.get("user");
 
-    const allRooms = await db
-      .select()
-      .from(rooms)
-      .where(sql`${rooms.ownerId} = ${user.id}`);
+      const allRooms = await db.query.rooms.findMany({
+        where: eq(rooms.ownerId, user.id),
+        orderBy: desc(rooms.createdAt),
+        with: {
+          owner: true
+        }
+      })
 
     return successResponse(c, allRooms);
   } catch (error) {
