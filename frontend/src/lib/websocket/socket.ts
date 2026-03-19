@@ -1,4 +1,4 @@
-export const ws = new WebSocket("ws://code-us-ezt6.onrender.com/ws")
+export const ws = new WebSocket("wss://code-us-ezt6.onrender.com/ws")
 
 ws.onopen = () => {
     console.log("connected to server")
