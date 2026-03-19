@@ -35,7 +35,8 @@ app.get("/ws", upgradeWebSocket((c) => {
 
 const server = serve({
     fetch: app.fetch,
-    port: 3001
+    port: Number(process.env.PORT) || 3001,
+    hostname: '0.0.0.0'
 })
 
 injectWebSocket(server)
