@@ -7,8 +7,17 @@ import { rooms } from "../db/schema/room";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { members } from "../db/schema/member";
 import { canvas } from "../db/schema/canvas";
+import { cors } from "hono/cors";
 
 const app = new Hono<{ Variables: { user: User } }>();
+
+app.use(
+    "/api/v1/*",
+    cors({
+        origin: ["http://localhost:3000", "https://code-us-orcin.vercel.app"],
+        credentials: true
+    })
+)
 
 app.post("/create", verifyUser, async (c) => {
   try {

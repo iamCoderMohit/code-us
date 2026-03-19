@@ -6,8 +6,17 @@ import { errorResponse, successResponse } from "../utils/apiResponse";
 import { canvas } from "../db/schema/canvas";
 import { canvas_participants } from "../db/schema/canvas_participants";
 import { sql } from "drizzle-orm";
+import { cors } from "hono/cors";
 
 const app = new Hono<{ Variables: { user: User } }>();
+
+app.use(
+    "/api/v1/*",
+    cors({
+        origin: ["http://localhost:3000", "https://code-us-orcin.vercel.app"],
+        credentials: true
+    })
+)
 
 app.post("/create", verifyUser, async (c) => {
   try {

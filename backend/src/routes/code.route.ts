@@ -5,8 +5,17 @@ import { errorResponse, successResponse } from "../utils/apiResponse";
 import { db } from "../config/drizzle";
 import { code } from "../db/schema/code";
 import { desc, sql } from "drizzle-orm";
+import { cors } from "hono/cors";
 
 const app = new Hono<{Variables: {user: User}}>()
+
+app.use(
+    "/api/v1/*",
+    cors({
+        origin: ["http://localhost:3000", "https://code-us-orcin.vercel.app"],
+        credentials: true
+    })
+)
 
 app.post("/create", verifyUser, async (c) => {
     try {

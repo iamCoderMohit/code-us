@@ -4,8 +4,17 @@ import { verifyUser } from "../middleware/auth"
 import { User } from "../customTypes/user"
 import { db } from "../config/drizzle"
 import { users } from "../db/schema/users"
+import { cors } from "hono/cors"
 
 const app = new Hono<{ Variables: {user: User}}>()
+
+app.use(
+    "/api/v1/*",
+    cors({
+        origin: ["http://localhost:3000", "https://code-us-orcin.vercel.app"],
+        credentials: true
+    })
+)
 
 app.get("/sync-user", verifyUser, async (c) => {
     try {
