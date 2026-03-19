@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function updateSession(request:NextRequest) {
-    let supabaseResponse = await NextResponse.next({
+    let supabaseResponse = NextResponse.next({
         request
     })
 
@@ -29,7 +29,9 @@ export async function updateSession(request:NextRequest) {
         !request.nextUrl.pathname.startsWith("/auth")
     ) {
         const url = request.nextUrl.clone()
-        url.pathname = "/login"
+        url.pathname = "/room"
         return NextResponse.redirect(url)
     }
+
+    return supabaseResponse
 }

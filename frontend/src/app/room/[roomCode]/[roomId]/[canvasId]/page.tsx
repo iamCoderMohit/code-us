@@ -16,7 +16,6 @@ export default function Page() {
   const { canvas, getCanvasInfo, code, getCanvasContent, setCode } =
     useCanvas();
   const { canvasId } = useParams();
-  const [content, setContent] = useState("");
 
   const saveTimeout = useRef<any>(null);
   const isRemoteUpdate = useRef(false);
@@ -147,22 +146,11 @@ export default function Page() {
 
   return (
     <div>
-      <input
-        type="text"
-        className="border"
-        onChange={(e) => setContent(e.target.value)}
-      />
-      <button
-        className="bg-orange-300"
-        onClick={() => saveCode(content, canvasId as string)}
-      >
-        save changes
-      </button>
       {canvas.length > 0 && (
         <div>
-          <h1 className="text-xl">{canvas[0].name}</h1>
+          <h1 className="text-xl font-bold mb-10">{canvas[0].name}</h1>
 
-          {code.length > 0 && (
+          {true && (
             <MonacoEditor
               height="500px"
               defaultLanguage="javascript"

@@ -127,8 +127,12 @@ app.get("/all/:roomId", verifyUser, async (c) => {
   try {
     const roomId = c.req.param("roomId")
 
-    const allMembers = await db.select().from(members)
-    .where(sql`${members.roomId} = ${roomId}`)
+    const allMembers = await db.query.members.findMany({
+      where: eq(members.roomId, roomId),
+      with: {
+        owner: true
+      }
+    })
 
     return successResponse(c, allMembers)
 
@@ -165,6 +169,29 @@ app.get("/allCanvases/:roomId", async (c) => {
   } catch (error) {
     console.error(error)
     return errorResponse(c, "can't get canvases")
+  }
+})
+
+// search for a room by invite code
+app.get("/findRoom/:inviteCode", verifyUser, async (c) => {
+  try {
+    const inviteCode = c.req.param("inviteCode")
+
+    const room = await db.query.rooms.findFirst({
+      where: eq(rooms.inviteCode, inviteCode),
+      with: {
+        owner: true
+      }
+    })
+
+    if(!room) {
+      return errorResponse(c, "No room found with this invite code")
+    }
+
+    return successResponse(c, room)
+  } catch (error) {
+    console.error(error)
+    return errorResponse(c, "Can't find room")
   }
 })
 

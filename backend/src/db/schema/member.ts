@@ -1,6 +1,7 @@
 import { boolean, pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
 import { users } from "./users";
 import { rooms } from "./room";
+import { relations } from "drizzle-orm";
 
 export const members = pgTable("members", {
     id: uuid("id").defaultRandom().primaryKey(),
@@ -9,3 +10,10 @@ export const members = pgTable("members", {
     isActive: boolean("is_active").default(false),
     createdAt: timestamp("created_at").defaultNow()
 })
+
+export const memberRelations = relations(members, ({one}) => ({
+    owner: one(users, {
+        fields: [members.userId],
+        references: [users.id]
+    })
+}))

@@ -1,9 +1,10 @@
 import { useState } from "react"
 import api from "../axios"
 import { getRoomId } from "../api/getRoomId"
+import { member } from "@/types/types"
 
 export function useMember() {
-    const [members, setMembers] = useState([])
+    const [members, setMembers] = useState<member[]>([])
 
     const allMembers = async (roomCode: string) => {
         try {

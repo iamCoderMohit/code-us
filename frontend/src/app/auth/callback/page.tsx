@@ -17,7 +17,7 @@ export default function Callback(){
       if(!token) return
 
       api.get("/auth/sync-user")
-      router.push("/") //push to main page later
+      router.push("/room") //push to main page later
     }
 
     syncUser()

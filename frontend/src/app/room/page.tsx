@@ -1,6 +1,7 @@
 "use client";
 
 import RoomCard from "@/components/RoomCard";
+import SearchRoom from "@/components/SearchRoom";
 import { createRoom } from "@/lib/api/createRoom";
 import { generateCode } from "@/lib/generateCode";
 import { useRoom } from "@/lib/hooks/useRoom";
@@ -20,7 +21,7 @@ function createCode() {
   }
 
   return (
-    <div className="px-10 py-5">
+    <div className="">
       <h1 className="text-xl font-bold mb-5">Create a room</h1>
       
       <div className="flex gap-5">
@@ -31,21 +32,27 @@ function createCode() {
       <button
         className="bg-purple-600 px-3 cursor-pointer mt-5 rounded-md"
         onClick={async () => {
-            createRoom(code),
+            await createRoom(code),
             await allRooms()
         }}
       >
         Create room
       </button>
 
-//now in the room data you have user info, so show it to the ui
       <div className="mt-10">
       <h1 className="text-xl font-bold">Join a room</h1>
+
+      <SearchRoom />
+
         <h1 className="mb-5">Rooms created by you</h1>
         {room.length > 0 && (
           <div className="flex flex-col gap-5">
+            <div className="flex justify-around">
+              <h1>Created by</h1>
+              <h1>Invite code</h1>
+            </div>
             {room.map((r) => (
-              <RoomCard id={r.id} owner={r.ownerId} roomCode={r.inviteCode} />
+              <RoomCard id={r.id} owner={r.owner.fullName} roomCode={r.inviteCode} />
             ))}
           </div>
         )}

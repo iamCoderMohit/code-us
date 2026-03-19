@@ -1,8 +1,9 @@
 import { useState } from "react";
 import api from "../axios";
+import { canvas } from "@/types/types";
 
 export function useCanvas() {
-    const [canvas, setCanvas] = useState("")
+    const [canvas, setCanvas] = useState<canvas[]>([])
 
     const getCanvasInfo = async (canvasId: string) => {
         try {
@@ -13,7 +14,7 @@ export function useCanvas() {
         }
     }
 
-    const [code, setCode] = useState([])
+    const [code, setCode] = useState("//start coding")
     const getCanvasContent = async (canvasId: string) => {
         try {
             const res = await api.get(`/code/info/${canvasId}`)

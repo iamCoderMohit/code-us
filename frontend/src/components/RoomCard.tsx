@@ -1,4 +1,3 @@
-import { joinRoom } from "@/lib/api/joinRoom"
 import { useRouter } from "next/navigation"
 
 interface Input {
@@ -10,12 +9,11 @@ interface Input {
 export default function RoomCard({roomCode, owner, id}: Input) {
     const router = useRouter()
     return (
-        <div className="flex w-full justify-around bg-gray-600"
+        <div className="flex w-full justify-around bg-gray-600/40 hover:bg-gray-600/80 transition-all cursor-pointer py-5 rounded-md"
         onClick={() => router.push(`/room/${roomCode}/${id}`)}
         >
-            <h1>{owner}</h1>
+            <h1 className="font-bold">{owner}</h1>
             <h1>{roomCode}</h1>
-            <button onClick={() => joinRoom(roomCode)}>Join Room</button>
         </div>
     )
 }
