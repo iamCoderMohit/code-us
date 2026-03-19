@@ -23,6 +23,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "CodeUs",
   description: "collaborative code editor",
+  icons: {
+    icon: "/favicon.png"
+  }
 };
 
 export default function RootLayout({
