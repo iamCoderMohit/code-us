@@ -5,7 +5,7 @@ export const signin = async () => {
         await supabase.auth.signInWithOAuth({
             provider: "google",
             options: {
-                redirectTo: "http://localhost:3000/auth/callback"
+                redirectTo: "https://code-us-orcin.vercel.app//auth/callback"
             }
         })
     } catch (error) {

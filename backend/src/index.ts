@@ -10,7 +10,7 @@ const app = new Hono()
 app.use(
     "/api/v1/*",
     cors({
-        origin: "http://localhost:3000",
+        origin: ["http://localhost:3000", "https://code-us-orcin.vercel.app"],
         credentials: true
     })
 )
