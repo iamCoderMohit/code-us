@@ -12,11 +12,13 @@ import { cors } from "hono/cors";
 const app = new Hono<{ Variables: { user: User } }>();
 
 app.use(
-    "*",
-    cors({
-        origin: ["http://localhost:3000", "https://code-us-orcin.vercel.app"],
-        credentials: true
-    })
+  "*",
+  cors({
+    origin: "https://code-us-orcin.vercel.app",
+    credentials: true,
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowHeaders: ["Content-Type", "Authorization"],
+  })
 )
 
 app.post("/create", verifyUser, async (c) => {
