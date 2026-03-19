@@ -6,21 +6,23 @@ export function setUpCollaboration(editor: any) {
   editor.onDidChangeModelContent(() => {
     if (isRemoteUpdate) return;
 
-    ws.send(
-      JSON.stringify({
-        type: "code-change",
-        code: editor.getValue(),
-      }),
-    );
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(
+        JSON.stringify({
+          type: "code-change",
+          code: editor.getValue(),
+        }),
+      );
+    }
   });
 
-    ws.onmessage = (event) => {
-    const data = JSON.parse(event.data)
+  ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
 
     if (data.type === "code-change") {
-      isRemoteUpdate = true
-      editor.setValue(data.code)
-      isRemoteUpdate = false
+      isRemoteUpdate = true;
+      editor.setValue(data.code);
+      isRemoteUpdate = false;
     }
-  }
+  };
 }

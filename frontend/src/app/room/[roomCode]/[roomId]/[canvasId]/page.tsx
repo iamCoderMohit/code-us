@@ -33,16 +33,18 @@ export default function Page() {
     editor.onDidChangeCursorPosition((e: any) => {
       const position = e.position;
 
-      ws.send(
-        JSON.stringify({
-          type: "cursor-move",
-          userId: userId.current,
-          userName: userName.current,
-          canvasId,
-          line: position.lineNumber,
-          column: position.column,
-        }),
-      );
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(
+          JSON.stringify({
+            type: "cursor-move",
+            userId: userId.current,
+            userName: userName.current,
+            canvasId,
+            line: position.lineNumber,
+            column: position.column,
+          }),
+        );
+      }
     });
   }
 
@@ -60,12 +62,12 @@ export default function Page() {
         data.line,
         data.column,
         data.line,
-        data.column, //there was +1 here  
+        data.column, //there was +1 here
       ),
       options: {
         className: "remote-cursor",
-        hoverMessage: {value: data.userName},
-        before: { 
+        hoverMessage: { value: data.userName },
+        before: {
           content: data.userName,
           inlineClassName: "remote-cursor-label",
         },
@@ -99,27 +101,29 @@ export default function Page() {
     const editor = editorRef.current;
     const position = editor.getPosition();
 
-    ws.send(
-      JSON.stringify({
-        type: "code-change",
-        code: newCode,
-        canvasId,
-        cursor: {
-          userId: userId.current,
-          userName: userName.current,
-          line: position.lineNumber,
-          column: position.column,
-        },
-      }),
-    );
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(
+        JSON.stringify({
+          type: "code-change",
+          code: newCode,
+          canvasId,
+          cursor: {
+            userId: userId.current,
+            userName: userName.current,
+            line: position.lineNumber,
+            column: position.column,
+          },
+        }),
+      );
+    }
   }
 
   useEffect(() => {
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      
+
       if (data.type === "code-change") {
-        console.log(data)
+        console.log(data);
         isRemoteUpdate.current = true;
         setCode(data.code);
         isRemoteUpdate.current = false;
