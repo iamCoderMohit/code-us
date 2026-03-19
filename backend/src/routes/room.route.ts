@@ -12,7 +12,7 @@ import { cors } from "hono/cors";
 const app = new Hono<{ Variables: { user: User } }>();
 
 app.use(
-    "/api/v1/*",
+    "*",
     cors({
         origin: ["http://localhost:3000", "https://code-us-orcin.vercel.app"],
         credentials: true
